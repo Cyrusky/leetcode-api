@@ -38,3 +38,4 @@ jobs:
         uses: docker/build-push-action@v6.1.0
         with:
           push: true
+          tags: latest, ${{ github.sha }}
