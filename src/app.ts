@@ -6,27 +6,27 @@ import { FetchUserDataRequest } from './types';
 import apicache from 'apicache';
 import axios from 'axios';
 import {
-  userContestRankingInfoQuery,
+  dailyQeustion,
   discussCommentsQuery,
   discussTopicQuery,
-  userProfileUserQuestionProgressV2Query,
-  skillStatsQuery,
   getUserProfileQuery,
-  userProfileCalendarQuery,
   officialSolutionQuery,
-  dailyQeustion,
+  skillStatsQuery,
+  userContestRankingInfoQuery,
+  userProfileCalendarQuery,
+  userProfileUserQuestionProgressV2Query
 } from './GQLQueries/newQueries';
+import config from './config';
 
 const app = express();
 let cache = apicache.middleware;
-const API_URL = process.env.LEETCODE_API_URL || 'https://leetcode.com/graphql';
 
 const limiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   limit: 60,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
-  message: 'Too many request from this IP, try again in 1 hour',
+  message: 'Too many request from this IP, try again in 1 hour'
 });
 
 app.use(cache('5 minutes'));
@@ -39,7 +39,7 @@ app.use((req: express.Request, _res: Response, next: NextFunction) => {
 
 async function queryLeetCodeAPI(query: string, variables: any) {
   try {
-    const response = await axios.post(API_URL, { query, variables });
+    const response = await axios.post(config.LEETCODE_API_URL, { query, variables });
     if (response.data.errors) {
       throw new Error(response.data.errors[0].message);
     }
@@ -73,23 +73,23 @@ app.get('/', (_req, res) => {
         '/languageStats?username=yourname': 'get the language stats of a user',
         '/userProfileUserQuestionProgressV2/:userSlug':
           'get your question progress',
-        '/skillStats/:username': 'get your skill stats',
+        '/skillStats/:username': 'get your skill stats'
       },
       contest: {
         '/contest/:contestSlug': 'get contest details',
         '/contestRanking/:contestSlug': 'get contest ranking',
-        '/userContestRankingInfo/:username': 'get user contest ranking info',
+        '/userContestRankingInfo/:username': 'get user contest ranking info'
       },
       discussion: {
         '/trendingDiscuss?first=20': 'get top 20 trending discussions',
         '/discussTopic/:topicId': 'get discussion topic',
-        '/discussComments/:topicId': 'get discussion comments',
+        '/discussComments/:topicId': 'get discussion comments'
       },
       problems: {
         singleProblem: {
           '/select?titleSlug=two-sum': 'get selected Problem',
           '/daily': 'get daily Problem',
-          '/dailyQuestion': 'get raw daily question',
+          '/dailyQuestion': 'get raw daily question'
         },
         problemList: {
           '/problems': 'get list of 20 problems',
@@ -98,10 +98,10 @@ app.get('/', (_req, res) => {
           '/problems?tags=array+math+string&limit=5':
             'get list some problems on selected topics',
           '/officialSolution?titleSlug=two-sum':
-            'get official solution of selected problem',
-        },
-      },
-    },
+            'get official solution of selected problem'
+        }
+      }
+    }
   });
 });
 
@@ -131,7 +131,7 @@ app.get('/userProfileCalendar', async (req, res) => {
   try {
     const data = await queryLeetCodeAPI(userProfileCalendarQuery, {
       username,
-      year: parseInt(year),
+      year: parseInt(year)
     });
     return res.json(data);
   } catch (error) {
@@ -156,7 +156,7 @@ const formatData = (data: any) => {
     reputation: data.matchedUser.profile.reputation,
     submissionCalendar: JSON.parse(data.matchedUser.submissionCalendar),
     recentSubmissions: data.recentSubmissionList,
-    matchedUserStats: data.matchedUser.submitStats,
+    matchedUserStats: data.matchedUser.submitStats
   };
 };
 
@@ -165,7 +165,7 @@ app.get('/userProfile/:id', async (req, res) => {
 
   try {
     const data = await queryLeetCodeAPI(getUserProfileQuery, {
-      username: user,
+      username: user
     });
     if (data.errors) {
       res.send(data);
@@ -209,13 +209,13 @@ app.get('/discussComments/:topicId', (req, res) => {
   const {
     orderBy = 'newest_to_oldest',
     pageNo = 1,
-    numPerPage = 10,
+    numPerPage = 10
   } = req.query;
   handleRequest(res, discussCommentsQuery, {
     topicId,
     orderBy,
     pageNo,
-    numPerPage,
+    numPerPage
   });
 });
 
@@ -244,7 +244,7 @@ app.use(
   (req: FetchUserDataRequest, _res: Response, next: NextFunction) => {
     req.body = {
       username: req.params.username,
-      limit: req.query.limit,
+      limit: req.query.limit
     };
     next();
   }

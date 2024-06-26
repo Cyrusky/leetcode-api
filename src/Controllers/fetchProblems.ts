@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import { ProblemSetQuestionListData } from '../types';
+import config from '../config';
 
 const fetchProblems = async (
   options: { limit: number; tags: string },
@@ -8,11 +9,11 @@ const fetchProblems = async (
   query: string
 ) => {
   try {
-    const response = await fetch('https://leetcode.com/graphql', {
+    const response = await fetch(config.LEETCODE_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Referer: 'https://leetcode.com',
+        Referer: 'https://leetcode.com'
       },
       body: JSON.stringify({
         query: query,
@@ -20,9 +21,9 @@ const fetchProblems = async (
           categorySlug: '',
           skip: 0,
           limit: options.limit || 20, //by default get 20 question
-          filters: { tags: options.tags ? options.tags.split(' ') : ' ' }, //filter by tags
-        },
-      }),
+          filters: { tags: options.tags ? options.tags.split(' ') : ' ' } //filter by tags
+        }
+      })
     });
 
     const result = await response.json();

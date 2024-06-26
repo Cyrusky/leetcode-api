@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import { UserData } from '../types';
+import config from '../config';
 
 const fetchUserDetails = async (
   options: { username: string; limit: number },
@@ -8,19 +9,19 @@ const fetchUserDetails = async (
   query: string
 ) => {
   try {
-    const response = await fetch('https://leetcode.com/graphql', {
+    const response = await fetch(config.LEETCODE_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Referer: 'https://leetcode.com',
+        Referer: 'https://leetcode.com'
       },
       body: JSON.stringify({
         query: query,
         variables: {
           username: options.username, //username required
-          limit: options.limit, //only for submission
-        },
-      }),
+          limit: options.limit //only for submission
+        }
+      })
     });
 
     const result = await response.json();
