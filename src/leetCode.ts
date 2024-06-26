@@ -108,20 +108,21 @@ export const selectProblem = (req: Request, res: Response) => {
     res.status(400).json({
       error: 'Missing or invalid query parameter: titleSlug',
       solution: 'put query after select',
-      example: 'localhost:3000/select?titleSlug=two-sum',
+      example: 'localhost:3000/select?titleSlug=two-sum'
     });
   }
 };
 
 export const problems = (
-  req: Request<{}, {}, {}, { limit: number; tags: string }>,
+  req: Request<{}, {}, {}, { limit: number; tags: string, skip?: number }>,
   res: Response
 ) => {
   const limit = req.query.limit;
   const tags = req.query.tags;
+  const skip = req.query.skip;
 
   controllers.fetchProblems(
-    { limit, tags },
+    { limit, tags, skip },
     res,
     formatUtils.formatProblemsData,
     gqlQueries.problemListQuery
@@ -138,15 +139,14 @@ export const trendingCategoryTopics = (_req: Request, res: Response) => {
       formatUtils.formatTrendingCategoryTopicData,
       gqlQueries.trendingDiscussQuery
     );
-  }
-  else {
+  } else {
     res.status(400).json({
       error: 'Missing or invalid query parameter: limit',
       solution: 'put query after discussion',
-      example: 'localhost:3000/trendingDiscuss?first=20',
+      example: 'localhost:3000/trendingDiscuss?first=20'
     });
   }
- 
+
 };
 
 export const languageStats = (_req: Request, res: Response) => {
@@ -157,13 +157,12 @@ export const languageStats = (_req: Request, res: Response) => {
       res,
       gqlQueries.languageStatsQuery
     );
-  }
-  else {
+  } else {
     res.status(400).json({
       error: 'Missing or invalid query parameter: username',
       solution: 'put query after discussion',
-      example: 'localhost:3000/languageStats?username=uwi',
+      example: 'localhost:3000/languageStats?username=uwi'
     });
   }
- 
+
 };
