@@ -38,4 +38,5 @@ jobs:
         uses: docker/build-push-action@v6.1.0
         with:
           push: true
+          no-cache: true
           tags: latest, ${{ github.sha }}
