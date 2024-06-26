@@ -28,4 +28,14 @@ jobs:
 
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+        run: |
+          docker build . --file Dockerfile --tag leetcode-api:${{ github.sha }}
+           
+      - name: Publish to Docker.io
+        uses: elgohr/Publish-Docker-Github-Action@v5
+        with:
+          name: ${{ github.sha }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          tag_names: cyrusky/leetcode-api
+          tag_semver: latest
